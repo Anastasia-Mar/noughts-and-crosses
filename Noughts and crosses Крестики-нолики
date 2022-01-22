@@ -1,0 +1,139 @@
+import random
+
+def display_positions():
+    print("  0 1 2")
+    print("- - - -")
+    print("0|0 1 2" )
+    print("1|3 4 5")
+    print("2|6 7 8")
+
+def display_board(board):
+    print("  0 1 2")
+    print("0", board[0], board[1], board[2])
+    print("1", board[3], board[4], board[5])
+    print("2", board[6], board[7], board[8])
+
+
+def choose_marker():
+    marker = ""
+    while all([marker != "x", marker != "o"]):
+        marker = input("Please choose your marker: ")
+
+        if marker == "o":
+            return "o", "x"
+        elif marker == "x":
+            return "x", "o"
+        else:
+            "Please enter a suitable marker (x/o) "
+
+
+def first_move():
+    if random.randint(0, 1) == 0:
+        return "Player 1"
+    else:
+        return "Player 2"
+
+
+def display_move(board, marker, pos):
+    board = board[:pos] + marker + board[(pos + 1):]
+    return board
+
+
+def check_space(board, pos):
+    return board[pos] == "-"
+
+
+def check_full_board(board):
+    for i in range(9):
+        if check_space(board, i):
+            return False
+    return True
+
+
+def player_choice(board):
+    pos = 10
+    while type(pos) == str or not 0 <= pos <= 8 or not check_space(board, pos):
+        try:
+            pos = int(input("Please enter your next move (0-8): "))
+            print()
+        except ValueError:
+            print("ValueError: your move must be 0 - 8")
+            print()
+    return pos
+
+
+def check_win(board, mark):
+    return any([all([board[0] == mark, board[3] == mark, board[6] == mark]),
+                all([board[1] == mark, board[4] == mark, board[7] == mark]),
+                all([board[2] == mark, board[5] == mark, board[8] == mark]),
+                all([board[0] == mark, board[1] == mark, board[2] == mark]),
+                all([board[3] == mark, board[4] == mark, board[5] == mark]),
+                all([board[6] == mark, board[7] == mark, board[8] == mark]),
+                all([board[0] == mark, board[4] == mark, board[8] == mark]),
+                all([board[2] == mark, board[4] == mark, board[6] == mark])])
+
+
+def check_replay():
+    choice = ""
+    while choice != "Y" or choice != "N":
+        choice = input("Would you like a replay (Y/N): ")
+        if choice == "Y":
+            return False
+        elif choice == "N":
+            return True
+        else:
+            print("Please enter either Y for Yes or N for No")
+
+
+while True:
+    the_board = "-" * 9
+    display_positions()
+    player_1_marker, player_2_marker = choose_marker()
+    turn = first_move()
+    print(turn + " will go first")
+
+    start = input("Would you like to begin the game? (Y/N): ")
+    if start == "Y":
+        ready = True
+    else:
+        ready = False
+
+    while ready:
+        if turn == "Player 1":
+            display_board(the_board)
+            print(turn)
+            position = player_choice(the_board)
+            the_board = display_move(the_board, player_1_marker, position)
+
+            if check_win(the_board, player_1_marker):
+                display_board(the_board)
+                print("Player 1 has won the game!")
+                ready = False
+            else:
+                if check_full_board(the_board):
+                    print("The game is a draw")
+                    break
+                else:
+                    print("Turn over")
+                    turn = "Player 2"
+
+        else:
+            display_board(the_board)
+            print(turn)
+            position = player_choice(the_board)
+            the_board = display_move(the_board, player_2_marker, position)
+
+            if check_win(the_board, player_2_marker):
+                display_board(the_board)
+                print("Player 2 has won the game!")
+                ready = False
+            else:
+                if check_full_board(the_board):
+                    print("The game is a draw")
+                    break
+                else:
+                    print("Turn over")
+                    turn = "Player 1"
+
+    if check_replay():
+        break
